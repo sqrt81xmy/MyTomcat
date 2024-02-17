@@ -2,12 +2,13 @@ package com.nk.servlet.Impl;
 
 import com.nk.servlet.Interf.HttpExchangeRequest;
 import com.nk.servlet.Interf.HttpExchangeResponse;
+import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.Map;
+import java.util.List;
 
 /**
  * 把adapter往HttpServletRequestImpl
@@ -43,7 +44,21 @@ public class HttpExchangeAdapter implements HttpExchangeResponse, HttpExchangeRe
 
     @Override
     public int getServerPort() {
-        return httpExchange.getRequestURI().getPort();
+        return -1;
+    }
+
+    @Override
+    public String getParameter(String s) {
+        return httpExchange.getRequestURI().getRawQuery();
+    }
+
+    @Override
+    public String getHeader(String s) {
+        Headers requestHeaders = httpExchange.getRequestHeaders();
+        List<String> strings = requestHeaders.get(s);
+        if(strings==null)
+            return null;
+        return strings.get(0);
     }
 
 

@@ -3,6 +3,7 @@ package com.nk.servlet.ServletContext;
 import com.nk.servlet.Filter.FilterChain.FilterChain;
 import com.nk.servlet.Filter.FilterMapping.FilterMapping;
 import com.nk.servlet.Servlet.ServletMapping.ServletMapping;
+import com.nk.servlet.Session.Manager.SessionManager;
 
 import javax.servlet.*;
 import javax.servlet.descriptor.JspConfigDescriptor;
@@ -15,15 +16,23 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
+import static com.nk.servlet.Constants.LoginConstants.COOKIE;
+
 public class ServletContext implements javax.servlet.ServletContext {
 
-
+    private SessionManager sessionManager;
     private List<FilterMapping> filterMappings;
     private List<ServletMapping> servletMappings;
     public void initServlet(List<ServletMapping> servletMappings){
         this.servletMappings = servletMappings;
     }
 
+    public void initSessionManager(){
+        this.sessionManager = new SessionManager();
+    }
+    public SessionManager getSessionManager(){
+        return this.sessionManager;
+    }
     public void initServlet(List<HttpServlet> servlets,List<String> urlPatterns){
         assert servlets.size()==urlPatterns.size();
         this.servletMappings = new ArrayList<>();
@@ -49,9 +58,13 @@ public class ServletContext implements javax.servlet.ServletContext {
         FilterChain filterChain = new FilterChain(filters);
         //找到一个恰当的servlet
         assert !servletMappings.isEmpty();
+        String uri = httpServletRequest.getRequestURI();
+        String cookie = httpServletRequest.getHeader(COOKIE);
+        if(cookie==null||cookie.isEmpty()){
+            uri = "/login";
+        }
         HttpServlet httpServlet = null;
         for(ServletMapping s:servletMappings){
-            String uri = httpServletRequest.getRequestURI();
             if(s.matches(uri)){
                 httpServlet = s.getServlet();
                 break;
@@ -65,6 +78,11 @@ public class ServletContext implements javax.servlet.ServletContext {
         filterChain.doFilter(httpServletRequest,httpServletResponse);
         httpServlet.service(httpServletRequest,httpServletResponse);
     }
+
+
+
+
+
     @Override
     public String getContextPath() {
         return null;

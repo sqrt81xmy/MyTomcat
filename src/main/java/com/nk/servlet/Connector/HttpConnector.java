@@ -7,6 +7,7 @@ import com.nk.servlet.Impl.HttpServletRequestImpl;
 import com.nk.servlet.Impl.HttpServletResponseImpl;
 import com.nk.servlet.Servlet.HelloServlet;
 import com.nk.servlet.Servlet.IndexServlet;
+import com.nk.servlet.Servlet.LoginServlet;
 import com.nk.servlet.Servlet.ServletMapping.ServletMapping;
 import com.nk.servlet.ServletContext.ServletContext;
 import com.sun.applet2.Applet2;
@@ -34,15 +35,18 @@ public class HttpConnector implements HttpHandler,AutoCloseable {
     public HttpConnector(String host,int port) throws IOException {
         //初始化ServletContext
         this.servletContext = new ServletContext();
-        //ServletContext:Filter:
+        //初始化ServletContext:Filter:
         List<FilterMapping> filterMappings = new ArrayList<>();
         filterMappings.add(new FilterMapping("/hello(/.*)*",new OKFilter()));
         this.servletContext.initFilters(filterMappings);
-        //ServletContext:Servlet:
+        //初始化ServletContext:Servlet:
         List<ServletMapping> httpServletMappings = new ArrayList<>();
         httpServletMappings.add(new ServletMapping("/hello(/.*)*",new HelloServlet()));
         httpServletMappings.add(new ServletMapping("/index(/.*)*",new IndexServlet()));
+        httpServletMappings.add(new ServletMapping("/login(/.*)*",new LoginServlet(this.servletContext)));
         this.servletContext.initServlet(httpServletMappings);
+        //初始化ServletContext:SessionManager
+        this.servletContext.initSessionManager();
         //启动Server
         this.httpServer = HttpServer.create(new InetSocketAddress(host, port),0);
         this.httpServer.createContext("/",this);

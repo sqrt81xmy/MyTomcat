@@ -7,6 +7,6 @@ public interface HttpExchangeRequest {
     public String getRequestURI();
     public String getPathInfo();
     public String getQueryString();
-    public int getServerPort();
-
+    public String getParameter(String s);
+    public String getHeader(String s);
 }

@@ -40,7 +40,8 @@ public class HttpServletRequestImpl implements HttpServletRequest{
 
     @Override
     public String getHeader(String s) {
-        return null;
+
+        return re.getHeader(s) ;
     }
 
     @Override
@@ -225,7 +226,7 @@ public class HttpServletRequestImpl implements HttpServletRequest{
 
     @Override
     public String getParameter(String s) {
-        return null;
+        return re.getParameter(s);
     }
 
     @Override
