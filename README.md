@@ -17,7 +17,7 @@ In this project, I have implemented the `filter`、`connector`、`servlet`、`se
 
   `filter` is used to satisfy some fixed constraints such as "authentication"、"login check"..
 
-  In that case, we use a lot of filters to consist `FilterChain`, and the way of select the filters is to match the `RequestUrl` and the  `filter Pattern Url`. On this chain, it use the `recursion` called `doFilter`, each filter on this chain execute the `doFilter` fuction, and back to the `recursion` on the chain.
+  In that case, we use a lot of filters to consist `FilterChain`, and the way of selecting the filters is to match the `RequestUrl` and the  `filter Pattern Url`. In order to execute this chain, it uses the `recursion` called `doFilter`, each filter on this chain executes the `doFilter` fuction, and back to the `recursion` on the chain.
   For example:
   ```
      @Override
@@ -29,7 +29,7 @@ In this project, I have implemented the `filter`、`connector`、`servlet`、`se
           }
       }
   ```
-   After the `filters[cnt-1]` execute the `doFilter` fuction, it will call the `doFilter` fuction of the chain which refers to the `this` in the last line of the code.
+   After the `filters[cnt-1]` executes the `doFilter` fuction, it will call the `doFilter` fuction of the chain which refers to the `this` in the last line of the code.
 
 
 * servlet
