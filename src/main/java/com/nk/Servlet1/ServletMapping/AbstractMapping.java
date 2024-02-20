@@ -1,4 +1,4 @@
-package com.nk.servlet.Servlet.ServletMapping;
+package com.nk.Servlet1.ServletMapping;
 
 import java.util.regex.Pattern;
 
@@ -6,6 +6,10 @@ public class AbstractMapping implements Comparable<AbstractMapping> {
 
     final Pattern pattern;
     final String url;
+    public AbstractMapping(){
+        this.url = null;
+        this.pattern = null;
+    }
 
     public AbstractMapping(String urlPattern) {
         this.url = urlPattern;

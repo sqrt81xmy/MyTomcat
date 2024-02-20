@@ -1,17 +1,21 @@
 package com.nk.servlet.ServletContext;
 
-import com.nk.servlet.Filter.FilterChain.FilterChain;
-import com.nk.servlet.Filter.FilterMapping.FilterMapping;
-import com.nk.servlet.Servlet.ServletMapping.ServletMapping;
+import com.nk.Filter.FilterChain.FilterChain;
+import com.nk.Filter.FilterMapping.FilterMapping;
+import com.nk.Servlet1.ServletMapping.ServletMapping;
 import com.nk.servlet.Session.Manager.SessionManager;
 
 import javax.servlet.*;
+import javax.servlet.annotation.WebFilter;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.descriptor.JspConfigDescriptor;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
@@ -33,18 +37,30 @@ public class ServletContext implements javax.servlet.ServletContext {
     public SessionManager getSessionManager(){
         return this.sessionManager;
     }
-    public void initServlet(List<HttpServlet> servlets,List<String> urlPatterns){
-        assert servlets.size()==urlPatterns.size();
-        this.servletMappings = new ArrayList<>();
-        for(int i=0;i<servlets.size();i++){
-            ServletMapping servletMapping =
-                    new ServletMapping(urlPatterns.get(i), servlets.get(i));
-            this.servletMappings.add(servletMapping);
-        }
-    }
 
     public void initFilters(List<FilterMapping> filterMappings){
         this.filterMappings = filterMappings;
+    }
+
+    public void initFS(Class<?>[] classes) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        List<FilterMapping> filterMappings = new ArrayList<>();
+        List<ServletMapping> servletMappings = new ArrayList<>();
+        for(Class<?> c:classes){
+            if(c.isAnnotationPresent(WebServlet.class)){
+                Constructor<?> declaredConstructor = c.getDeclaredConstructor();
+                WebServlet s = (WebServlet) declaredConstructor.newInstance();
+                Class<? extends Servlet> clazz = (Class<? extends Servlet>) c;
+                servletMappings.add(new ServletMapping(s.value()[0], clazz.newInstance()));
+            }
+            if(c.isAnnotationPresent(WebFilter.class)){
+                Constructor<?> declaredConstructor = c.getDeclaredConstructor();
+                WebFilter f = (WebFilter) declaredConstructor.newInstance();
+                Class<? extends Filter> clazz = (Class<? extends Filter>) c;
+                filterMappings.add(new FilterMapping(f.value()[0],clazz.newInstance()));
+            }
+        }
+        this.initFilters(filterMappings);
+        this.initServlet(servletMappings);
     }
     public void process(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException, ServletException {
        //找到一堆恰当的filters组成filterChain
@@ -63,7 +79,7 @@ public class ServletContext implements javax.servlet.ServletContext {
         if(cookie==null||cookie.isEmpty()){
             uri = "/login";
         }
-        HttpServlet httpServlet = null;
+        Servlet httpServlet = null;
         for(ServletMapping s:servletMappings){
             if(s.matches(uri)){
                 httpServlet = s.getServlet();
@@ -78,10 +94,6 @@ public class ServletContext implements javax.servlet.ServletContext {
         filterChain.doFilter(httpServletRequest,httpServletResponse);
         httpServlet.service(httpServletRequest,httpServletResponse);
     }
-
-
-
-
 
     @Override
     public String getContextPath() {

@@ -1,12 +1,14 @@
 package com.nk.servlet.Impl;
 
 import com.nk.servlet.Interf.HttpExchangeRequest;
-import com.sun.deploy.net.HttpRequest;
+import com.nk.servlet.ServletContext.ServletContext;
+import com.nk.servlet.Session.HttpSessionImpl;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.security.Principal;
@@ -15,13 +17,62 @@ import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Map;
 
+import static com.nk.servlet.Constants.LoginConstants.*;
+import static com.nk.servlet.Constants.LoginConstants.COOKIE;
+import static com.nk.servlet.utils.RequestUtils.parseQuery;
+
 
 public class HttpServletRequestImpl implements HttpServletRequest{
     private HttpExchangeRequest re;
+    private HttpServletRequest sre;
+    private HttpServletResponse srep;
+    private ServletContext servletContext;
 
-    public HttpServletRequestImpl(HttpExchangeRequest re)
-    {
+    @Override
+    public HttpSession getSession() {
+        String params = this.sre.getParameter("");
+        String id = "11";
+        String pwd = "22";
+        if(params!=null){
+            Map<String,String> mp = parseQuery(params);
+            id = mp.get(LOGIN_USER);
+            pwd = mp.get(LOGIN_PWD);
+        }
+        String header = sre.getHeader(COOKIE);
+        boolean iscreate = (header==null||header.length()==0)?false:true;
+        if(iscreate){
+            throw new RuntimeException("重复登录?");
+        }
+        //TODO:连数据库
+        if(id!=null&&pwd!=null){
+            //TODO:SessionId加密
+            this.srep.setHeader(COOKIE,id);
+            //添加session
+            HttpSession session = new HttpSessionImpl(id);
+            this.servletContext.getSessionManager().addSession(id,session);
+            //往resp里面加点字
+            PrintWriter writer = null;
+            try {
+                writer = this.srep.getWriter();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            writer.write("<h1>Login Liang</h1>");
+            writer.close();
+            return session;
+        }
+        else
+            throw new RuntimeException("登录格式错误！");
+    }
+
+
+    public HttpServletRequestImpl(HttpExchangeRequest re, ServletContext servletContext){
         this.re = re;
+        this.servletContext = servletContext;
+    }
+
+    public ServletContext getServletCOntext(){
+        return this.servletContext;
     }
     @Override
     public String getAuthType() {
@@ -120,14 +171,10 @@ public class HttpServletRequestImpl implements HttpServletRequest{
     }
 
     @Override
-    public HttpSession getSession(boolean b) {
+    public HttpSession getSession(boolean create) {
         return null;
     }
 
-    @Override
-    public HttpSession getSession() {
-        return null;
-    }
 
     @Override
     public String changeSessionId() {

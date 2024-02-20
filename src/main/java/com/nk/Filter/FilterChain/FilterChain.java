@@ -1,4 +1,4 @@
-package com.nk.servlet.Filter.FilterChain;
+package com.nk.Filter.FilterChain;
 
 import javax.servlet.Filter;
 import javax.servlet.ServletException;
@@ -10,6 +10,10 @@ import java.util.List;
 public class FilterChain implements javax.servlet.FilterChain {
     private List<Filter> filters;
     private int cnt = 0;
+
+    public FilterChain(){
+        this.filters = null;
+    }
 
     public FilterChain(List<Filter> filters) {
         this.filters = filters;
