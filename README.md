@@ -50,7 +50,7 @@ war文件打包方法：
 
 你可以下载本目录下的`jar`包和`war`包，然后应用类似cli.txt中的命令运行。
 
-其中`jar` 包是MyTomcat生成的，`war`包是`MyApp`生成的
+其中`jar` 包是`MyTomcat`生成的，`war`包是`MyApp`生成的
 
 你就会得到下面这个页面：
 
