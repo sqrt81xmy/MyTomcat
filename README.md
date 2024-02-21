@@ -46,3 +46,20 @@ war文件打包方法：
   <img src="https://github.com/sqrt81xmy/MyTomcat/assets/89298656/c9d9ee38-e1ff-4690-96c9-2cbebcbb1e8f" width=150 height=200>
 </div>
 
+### 应用：
+
+你可以下载本目录下的`jar`包和`war`包，然后应用类似cli.txt中的命令运行。
+
+其中`jar` 包是MyTomcat生成的，`war`包是`MyApp`生成的
+
+你就会得到下面这个页面：
+
+<div align="center">
+  <img src="https://github.com/sqrt81xmy/MyTomcat/assets/89298656/b070cb6d-39f8-4cc3-9c2f-6a5481118d0c" width=350 height=100>
+</div>
+
+访问Servlet中的网址：
+
+<div align="center">
+  <img src="https://github.com/sqrt81xmy/MyTomcat/assets/89298656/127fd951-08e7-49ac-805b-2e68154efcd8" width=350 height=130>
+</div>
