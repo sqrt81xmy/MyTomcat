@@ -1,0 +1,17 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="MyApp">
+    <output-path>$PROJECT_DIR$/out/artifacts/MyApp</output-path>
+    <root id="archive" name="MyApp.war">
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="MyApp" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="Maven: commons-cli:commons-cli:1.4" />
+          <element id="library" level="project" name="Maven: javax.servlet:javax.servlet-api:4.0.1" />
+          <element id="library" level="project" name="Maven: org.jetbrains:annotations:24.1.0" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>
