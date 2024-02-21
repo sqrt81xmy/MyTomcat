@@ -37,13 +37,13 @@ war文件打包方法：
 然后打开`maven`，先`clean` 清空`target` 目录：
 
 <div align="center">
-  <img src="https://github.com/sqrt81xmy/MyTomcat/assets/89298656/73564409-73e1-4ddf-921e-123f6a5678e4" width=150 height=200>
+  <img src="https://github.com/sqrt81xmy/MyTomcat/assets/89298656/73564409-73e1-4ddf-921e-123f6a5678e4" width=150 height=230>
 </div>
 
 然后`install` 生成即可：
 
 <div align="center">
-  <img src="https://github.com/sqrt81xmy/MyTomcat/assets/89298656/c9d9ee38-e1ff-4690-96c9-2cbebcbb1e8f" width=150 height=200>
+  <img src="https://github.com/sqrt81xmy/MyTomcat/assets/89298656/c9d9ee38-e1ff-4690-96c9-2cbebcbb1e8f" width=150 height=230>
 </div>
 
 ### 应用：
