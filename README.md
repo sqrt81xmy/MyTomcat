@@ -5,7 +5,42 @@ For more details, you can refer to this url: https://www.liaoxuefeng.com/wiki/15
 
 ## Error correction:
 
-This part is the error correction of the `Tomcat1.0`, and the error exists in the `Session` part. In the `Tomcat1.0`, the `LoginServlet` needs the `sessionId`(in Cookie) to check whether the user has login(**A session is not created every time the server is accessed, but only when the `HttpRequest.getSession()` method is called**, 这段话的中文是：Session并不是每一次访问服务器都会创建，只有调用`HttpRequest.getSession`方法时才会创建, you can get more details in: https://www.jianshu.com/p/13a1647cc7bc), so I just put the `ServletContext` in the `LoginServlet` which can use its `SessionManager` to get the `session`, but if you split your `servlet` and the `server`, you CAN NOT get the `ServerContext` in you `servlet`. In fact you should put the `getSession()` method in the `HttpRequest` class instead of the `ServerContext`(but you can put the `ServletContext` in the `HttpRequest` and use the `SessionManger` in the `ServletContext` to get the `session`), therefore, you can call this method in the function:
+This part is the error correction of the `Tomcat1.0`, and the error exists in the `Session` part. In the `Tomcat1.0`, the `LoginServlet` needs the `sessionId`(in Cookie) to check whether the user has login(**A session is not created every time the server is accessed, but only when the `HttpRequest.getSession()` method is called**, 这段话的中文是：Session并不是每一次访问服务器都会创建，只有调用`HttpRequest.getSession`方法时才会创建, you can get more details in: https://www.jianshu.com/p/13a1647cc7bc). And the code of `getSession` is:
+
+```java
+ @Override
+    public HttpSession getSession() {
+        String params = this.sre.getParameter("");
+        if(params!=null){
+            Map<String,String> mp = parseQuery(params);
+            id = mp.get(LOGIN_USER);
+            pwd = mp.get(LOGIN_PWD);
+        }
+        String header = sre.getHeader(COOKIE);
+        boolean iscreate = (header==null||header.length()==0)?false:true;
+        if(iscreate){
+            throw new RuntimeException("重复登录?");
+        }
+        //TODO:连数据库
+        if(id!=null&&pwd!=null){
+            //TODO:SessionId加密
+            this.srep.setHeader(COOKIE,id);
+            //如果Session已经存在
+            If(this.servletContext.getSessionManager().containsSession(id)){
+                return this.servletContext.getSessionManager().getSession(id);
+            }
+            //添加session
+            HttpSession session = new HttpSessionImpl(id);
+            this.servletContext.getSessionManager().addSession(id,session);
+            //往resp里面加点字
+            return session;
+        }
+        else
+            throw new RuntimeException("登录格式错误！");
+    }
+```
+
+So I just put the `ServletContext` in the `LoginServlet` which can use its `SessionManager` to get the `session`, but if you split your `servlet` and the `server`, you CAN NOT get the `ServerContext` in you `servlet`. In fact you should put the `getSession()` method in the `HttpRequest` class instead of the `ServerContext`(but you can put the `ServletContext` in the `HttpRequest` and use the `SessionManger` in the `ServletContext` to get the `session`), therefore, you can call this method in the function:
 
 ```java
 public class LoginServlet extends HttpServlet implements WebServlet{
